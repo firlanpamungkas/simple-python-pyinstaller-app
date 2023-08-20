@@ -6,6 +6,8 @@ node {
     ])
 
     try {
+        def approval = null // Define the approval variable
+
         stage('Checkout') {
             checkout scm
         }
@@ -23,14 +25,15 @@ node {
             }
         }
 
-         stage('Manual Approval') {
-            input(id: 'approval', message: 'Lanjutkan ke tahap Deploy?', parameters: [
+        stage('Manual Approval') {
+            approval = input(id: 'approval', message: 'Lanjutkan ke tahap Deploy?', parameters: [
                 string(defaultValue: 'Proceed', description: 'Pilih Proceed untuk melanjutkan atau Abort untuk menghentikan', name: 'action')
             ])
         }
 
         stage('Deploy') {
             if (approval == 'Proceed') {
+                // Perform deployment here, replace this with your actual deployment steps
                 echo 'Aplikasi berhasil di-deploy.'
                 sleep time: 60, unit: 'SECONDS' // Menjeda eksekusi selama 1 menit.
             } else {
@@ -39,7 +42,6 @@ node {
                 error('Pipeline dihentikan oleh pengguna')
             }
         }
-
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
         throw e
