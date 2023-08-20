@@ -23,23 +23,10 @@ node {
             }
         }
 
-        stage('Deliver') {
-            node {
-                def VOLUME = "${pwd()}/sources:/src"
-                def IMAGE = 'cdrx/pyinstaller-linux:python2'
-
-                dir(path: env.BUILD_ID) {
-                    unstash(name: 'compiled-results')
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F /src/add2vals.py'" 
-                }
-
-                post {
-                    success {
-                        archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals" 
-                        sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf ${env.BUILD_ID}'"
-                    }
-                }
-            }
+         stage('Manual Approval') {
+            input(id: 'approval', message: 'Lanjutkan ke tahap Deploy?', parameters: [
+                string(defaultValue: 'Proceed', description: 'Pilih Proceed untuk melanjutkan atau Abort untuk menghentikan', name: 'action')
+            ])
         }
 
     } catch (Exception e) {
