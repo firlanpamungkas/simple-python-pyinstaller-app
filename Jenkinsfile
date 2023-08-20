@@ -34,24 +34,6 @@ node {
             }
         }
 
-        stage('Manual Approval') {
-            steps {
-                script {
-                    def userInput = input(
-                        id: 'userInput',
-                        message: 'Lanjutkan ke tahap Deploy?',
-                        parameters: [
-                            [$class: 'ChoiceParameterDefinition', choices: 'Proceed\nAbort', description: 'Pilih opsi', name: 'ACTION']
-                        ]
-                    )
-
-                    if (userInput == 'Abort') {
-                        error('Eksekusi pipeline dihentikan oleh pengguna.')
-                    }
-                }
-            }
-        }
-        
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
         throw e
