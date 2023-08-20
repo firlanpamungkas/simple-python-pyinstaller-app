@@ -24,35 +24,24 @@ node {
         }
 
         stage('Deliver') {
-            node {
-                def VOLUME = "${pwd()}/sources:/src"
-                def IMAGE = "cdrx/pyinstaller-linux:python2"
-
-                try {
-                    // Set up the environment and create a directory for the build
-                    def BUILD_ID = UUID.randomUUID().toString()
-                    dir(BUILD_ID) {
-                        // Restore the stashed compiled results
-                        unstash(name: 'compiled-results')
-
-                        // Run PyInstaller inside the Docker container
-                        sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
-                    }
-
-                    // Archive the built executable
-                    archiveArtifacts artifacts: "${BUILD_ID}/sources/dist/add2vals", allowEmptyArchive: true
-
-                } catch (Exception e) {
-                    currentBuild.result = 'FAILURE'
-                    throw e
-
-                } finally {
-                    // Clean up: remove build artifacts
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf ${BUILD_ID}'"
+            agent any
+            environment {
+                VOLUME = "${pwd()}/sources:/src"
+                IMAGE = 'cdrx/pyinstaller-linux:python2'
+            }
+            steps {
+                dir(path: env.BUILD_ID) {
+                    unstash(name: 'compiled-results')
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F /src/add2vals.py'"
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf ${env.BUILD_ID}'"
                 }
             }
         }
-
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
         throw e
