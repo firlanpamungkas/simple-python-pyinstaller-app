@@ -26,6 +26,8 @@ node {
         stage('Deploy') {
             steps {
                 script {
+                    // Lakukan deploy aplikasi ke tempat yang sesuai, misalnya: docker-compose, Kubernetes, atau server langsung.
+                    // Gantilah dengan perintah atau skrip yang sesuai dengan lingkungan deploy Anda.
                     echo 'Aplikasi berhasil di-deploy.'
                     sleep time: 60, unit: 'SECONDS' // Menjeda eksekusi selama 1 menit.
                 }
@@ -47,6 +49,14 @@ node {
                         error('Eksekusi pipeline dihentikan oleh pengguna.')
                     }
                 }
+            }
+        }
+        
+        stage('Monitoring') {
+            steps {
+                // Lakukan konfigurasi Prometheus dan Grafana sesuai kriteria 5.
+                // Gantilah dengan perintah atau skrip yang sesuai dengan konfigurasi Anda.
+                echo 'Konfigurasi Prometheus dan Grafana'
             }
         }
         
