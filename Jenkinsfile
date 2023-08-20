@@ -29,6 +29,17 @@ node {
             ])
         }
 
+        stage('Deploy') {
+            if (approval == 'Proceed') {
+                echo 'Aplikasi berhasil di-deploy.'
+                sleep time: 60, unit: 'SECONDS' // Menjeda eksekusi selama 1 menit.
+            } else {
+                echo 'Eksekusi pipeline dihentikan oleh pengguna.'
+                currentBuild.result = 'ABORTED'
+                error('Pipeline dihentikan oleh pengguna')
+            }
+        }
+
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
         throw e
