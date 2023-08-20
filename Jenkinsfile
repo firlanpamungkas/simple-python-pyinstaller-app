@@ -22,6 +22,34 @@ node {
                 sh 'py.test --junit-xml test-reports/results.xml sources/test_calc.py'
             }
         }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    echo 'Aplikasi berhasil di-deploy.'
+                    sleep time: 60, unit: 'SECONDS' // Menjeda eksekusi selama 1 menit.
+                }
+            }
+        }
+
+        stage('Manual Approval') {
+            steps {
+                script {
+                    def userInput = input(
+                        id: 'userInput',
+                        message: 'Lanjutkan ke tahap Deploy?',
+                        parameters: [
+                            [$class: 'ChoiceParameterDefinition', choices: 'Proceed\nAbort', description: 'Pilih opsi', name: 'ACTION']
+                        ]
+                    )
+
+                    if (userInput == 'Abort') {
+                        error('Eksekusi pipeline dihentikan oleh pengguna.')
+                    }
+                }
+            }
+        }
+        
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
         throw e
