@@ -52,14 +52,6 @@ node {
             }
         }
         
-        stage('Monitoring') {
-            steps {
-                // Lakukan konfigurasi Prometheus dan Grafana sesuai kriteria 5.
-                // Gantilah dengan perintah atau skrip yang sesuai dengan konfigurasi Anda.
-                echo 'Konfigurasi Prometheus dan Grafana'
-            }
-        }
-        
     } catch (Exception e) {
         currentBuild.result = 'FAILURE'
         throw e
