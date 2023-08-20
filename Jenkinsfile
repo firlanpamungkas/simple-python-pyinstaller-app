@@ -24,13 +24,13 @@ node {
         }
 
         stage('Deploy') {
-            steps {
-                script {
-                    // Lakukan deploy aplikasi ke tempat yang sesuai, misalnya: docker-compose, Kubernetes, atau server langsung.
-                    // Gantilah dengan perintah atau skrip yang sesuai dengan lingkungan deploy Anda.
-                    echo 'Aplikasi berhasil di-deploy.'
-                    sleep time: 60, unit: 'SECONDS' // Menjeda eksekusi selama 1 menit.
-                }
+            try {
+                // Perform deployment here, replace this with your actual deployment steps
+                echo 'Aplikasi berhasil di-deploy.'
+                sleep time: 60, unit: 'SECONDS' // Menjeda eksekusi selama 1 menit.
+            } catch (Exception e) {
+                currentBuild.result = 'FAILURE'
+                throw e
             }
         }
 
