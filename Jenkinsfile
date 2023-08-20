@@ -23,14 +23,33 @@ node {
             }
         }
 
-        stage('Deploy') {
-            try {
-                // Perform deployment here, replace this with your actual deployment steps
-                echo 'Aplikasi berhasil di-deploy.'
-                sleep time: 60, unit: 'SECONDS' // Menjeda eksekusi selama 1 menit.
-            } catch (Exception e) {
-                currentBuild.result = 'FAILURE'
-                throw e
+        stage('Deliver') {
+            node {
+                def VOLUME = "${pwd()}/sources:/src"
+                def IMAGE = "cdrx/pyinstaller-linux:python2"
+
+                try {
+                    // Set up the environment and create a directory for the build
+                    def BUILD_ID = UUID.randomUUID().toString()
+                    dir(BUILD_ID) {
+                        // Restore the stashed compiled results
+                        unstash(name: 'compiled-results')
+
+                        // Run PyInstaller inside the Docker container
+                        sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
+                    }
+
+                    // Archive the built executable
+                    archiveArtifacts artifacts: "${BUILD_ID}/sources/dist/add2vals", allowEmptyArchive: true
+
+                } catch (Exception e) {
+                    currentBuild.result = 'FAILURE'
+                    throw e
+
+                } finally {
+                    // Clean up: remove build artifacts
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf ${BUILD_ID}'"
+                }
             }
         }
 
